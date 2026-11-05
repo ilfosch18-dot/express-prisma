@@ -11,3 +11,15 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+// Modelli (tabelle db)
+
+model Book {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String? @db.Text
+  author      String  @db.TinyText
+  price       Decimal @db.Decimal(5, 2)
+  quantity    Int     @default(0)
+  isLoan      Boolean @default(false)
+}
