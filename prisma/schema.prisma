@@ -15,11 +15,13 @@ datasource db {
 // Modelli (tabelle db)
 
 model Book {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
-  description String? @db.Text
-  author      String  @db.TinyText
-  price       Decimal @db.Decimal(5, 2)
-  quantity    Int     @default(0)
-  isLoan      Boolean @default(false)
+  description String?  @db.Text
+  author      String   @db.TinyText
+  price       Decimal  @db.Decimal(5, 2)
+  quantity    Int      @default(0)
+  isLoan      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
