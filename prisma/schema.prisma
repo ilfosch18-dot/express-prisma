@@ -15,22 +15,32 @@ datasource db {
 // Modelli (tabelle db)
 
 model Book {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
-  description String?   @db.Text
-  author      String    @db.TinyText
-  price       Decimal   @db.Decimal(5, 2)
-  quantity    Int       @default(0)
-  isLoan      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  category    Category? @relation(fields: [categoryId], references: [id])
+  description String?    @db.Text
+  author      String     @db.TinyText
+  price       Decimal    @db.Decimal(5, 2)
+  quantity    Int        @default(0)
+  isLoan      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  category    Category?  @relation(fields: [categoryId], references: [id])
   categoryId  Int?
+  languages   Language[]
 }
 
 model Category {
   id        Int      @id @default(autoincrement())
   name      String   @db.TinyText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+}
+
+model Language {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(15)
+  code      String   @db.VarChar(5)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   books     Book[]
