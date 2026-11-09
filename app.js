@@ -9,6 +9,8 @@ import errorNotFound from "./middlewares/errorNotFound.js";
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 // Routing homepage
 app.get('/', (req,res) => {
     res.send('Questa è la home della libreria');

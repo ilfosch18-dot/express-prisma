@@ -91,5 +91,23 @@ router.get('/:id', async (req, res) => {
     res.json(book);
 })
 
+// STORE: creazione di un nuovo record
+router.post('/', async (req, res) => {
+    //destrutturo
+    const { title, author, price, quantity } = req.body;
+    const newBook = await prisma.book.create({
+        data: {
+            title,
+            author,
+            price,
+            quantity,
+        },
+        select: {
+            id: true,
+        },
+    });
+    res.status(201).json(newBook);
+});
+
 // esporto il router
 export default router;
