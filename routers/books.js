@@ -52,6 +52,17 @@ router.get('/:id', async (req, res) => {
     });
     res.json(book);
 }) */
+    
+    // Validazione sul formato dell'ID che deve essere un intero
+    // si legge se non è un intero restituisci:
+    if (!Number.isInteger(id)) {
+        // errore 400 bed request
+        res.status(400);
+        res.json({
+        message: "ID invalido",
+        });
+          return;
+    }
 
 // includo colonne specifiche di dati usando SELECT
     const book = await prisma.book.findUnique({
@@ -67,6 +78,16 @@ router.get('/:id', async (req, res) => {
         },
         },
     });
+
+
+    // Validazione se non trova un ID nella tabella
+    if (!book) {
+        res.status(404)
+        res.json({
+        message: "ID non trovato",
+        });
+        return;
+    }
     res.json(book);
 })
 
