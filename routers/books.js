@@ -31,5 +31,44 @@ router.get('/', async (req, res) => {
     res.json(books);
 });
 
+// SHOW - descrive una rotta API che ci permette di leggere uno specifico record di una tabella
+router.get('/:id', async (req, res) => {
+    const id = Number(req.params.id);
+
+    /* const book = await prisma.book.findUnique({
+        where: {
+            id,
+        }
+    }); */
+
+    // includo dati correlati usando INCLUDE
+/*     const book = await prisma.book.findUnique({
+        where: {
+            id,
+    },
+    include: {
+        category:true,
+    }
+    });
+    res.json(book);
+}) */
+
+// includo colonne specifiche di dati usando SELECT
+    const book = await prisma.book.findUnique({
+        where: {
+            id,
+        },
+        include: {
+    category: {
+        select: {
+            id: true,
+            name: true,
+            },
+        },
+        },
+    });
+    res.json(book);
+})
+
 // esporto il router
 export default router;
