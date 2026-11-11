@@ -93,15 +93,35 @@ router.get('/:id', async (req, res) => {
 
 // STORE: creazione di un nuovo record
 router.post('/', async (req, res) => {
-    //destrutturo
-    const { title, author, price, quantity } = req.body;
+
+//destrutturo
+    const { title, author, price, quantity, categoryId } = req.body;
+
+    // Verifica categoryId esistente
+    const category = await prisma.category.findUnique({
+        where: {
+            id: categoryId,
+        }
+    });
+    if (!category) {
+        return res.status(400).json({
+            error:'CategoryId non valido',
+        })
+    };
+
+    // inserimento nuovo libro
     const newBook = await prisma.book.create({
         data: {
             title,
             author,
             price,
             quantity,
+        category: {
+        connect: {
+            id: categoryId,
         },
+    },
+},
         select: {
             id: true,
         },
@@ -109,5 +129,95 @@ router.post('/', async (req, res) => {
     res.status(201).json(newBook);
 });
 
+// UPDATE: userò patch perchè voglio moficare solo parzialmente un elemento specifico
+router.patch('/:id', async (req, res) => {
+    const id = Number(req.params.id);
+
+    // Validazione del formato dell'id
+    if (!Number.isInteger(id)) {
+        return res.status(400).json({
+            message: "ID invalido",
+        });
+    }
+
+    // destrutturo
+    const { title, description, author, price, quantity, categoryId } = req.body;
+
+    //////////// validazione se il book esiste
+    const bookId = await prisma.book.findUnique({
+        where: {
+            id
+        }
+    })
+    // controllo se esiste
+    if (!bookId) {
+        return res.status(404).json({
+            error: 'Id non trovato',
+        });
+    }
+
+    ///////////// validazione se la categoria esiste
+    if (categoryId !== undefined) {
+        const category = await prisma.category.findUnique({
+            where: {
+                id: categoryId,
+            },
+        });
+        if (!category) {
+            return res.status(400).json({
+                error: 'CategoryId invalida',
+            });
+        }
+    }
+
+    const updatedBook = await prisma.book.update({
+        where: {
+            id: id
+        },
+        data: {
+            title,
+            description,
+            author,
+            price,
+            quantity,
+            categoryId
+        }
+    });
+    res.json(updatedBook);
+    });
+
+// DESTROY - cancello un libro specifico
+router.delete('/:id', async (req, res) => {
+    const id = Number(req.params.id);
+
+    // validazione del formato corretto dell'id
+    if (!Number.isInteger(id)) {
+        return res.status(400).json({
+            error:"Il formato dell'id non è valido",
+        })
+    }
+
+    // validazione di esistenza di un id
+    const findId = await prisma.book.findUnique({
+        where: {
+            id,
+        }
+    })
+    if (!findId) {
+        return res.status(404).json({
+            error:'Id non trovato',
+        })
+    }
+
+    // Query al database
+    const deletedBook = await prisma.book.delete({
+        where: {
+            id: id,
+        }
+    });
+
+    // Risposta al client
+    res.status(204).send();
+});
 // esporto il router
 export default router;
